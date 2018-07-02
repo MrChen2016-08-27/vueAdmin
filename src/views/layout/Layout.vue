@@ -1,113 +1,207 @@
-<style scoped>
-    .layout{
-        background: #f5f7f9;
+<style lang='less' scoped>
+a{
+    color: #666666;
+}
+.layout{
+    border: 1px solid #d7dde4;
+    background: #f5f7f9;
+    position: relative;
+    border-radius: 4px;
+    overflow: hidden;
+    height: 100%;
+}
+.layout-logo{
+    position: absolute;
+    display: flex;
+    background: #126496;
+    left: 0;
+    top: 0;
+    width: 220px;
+    height: 84px;
+    justify-content: center;
+    align-items: center;
+    >img{
+        width: 58px;
+    }
+}
+.project-title{
+    position: relative;
+    font-size: 28px;
+    color: #ffffff;
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.layout-nav{
+    width: 330px;
+    height: 84px;
+    margin: 0 auto;
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+.layout-center{
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+    .left-slide{
+        width: 220px;
+        min-width: 220px;
+        flex: 0 0 220px;
+        overflow: hidden;
         position: relative;
-        border-radius: 4px;
-        overflow: hidden;
         height: 100%;
-        border: 1px solid red;
+        .layout-slide{
+            background-color: #26364d;
+            height: 100%;
+            overflow-y: auto;
+        }
     }
-    .layout-container{
-        height: 100%;
-    }
-    .layout-header-bar{
-        background: #fff;
-        box-shadow: 0 1px 1px rgba(0,0,0,.1);
-    }
-    .layout-logo-left{
-        width: 90%;
-        height: 30px;
-        background: #5b6270;
-        border-radius: 3px;
-        margin: 15px auto;
-    }
-    .menu-icon{
-        transition: all .3s;
-    }
-    .rotate-icon{
-        transform: rotate(-90deg);
-    }
-    .menu-item span{
-        display: inline-block;
-        overflow: hidden;
-        width: 69px;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        vertical-align: bottom;
-        transition: width .2s ease .2s;
-    }
-    .menu-item i{
-        transform: translateX(0px);
-        transition: font-size .2s ease, transform .2s ease;
-        vertical-align: middle;
-        font-size: 16px;
-    }
-    .collapsed-menu span{
-        width: 0px;
-        transition: width .2s ease;
-    }
-    .collapsed-menu i{
-        transform: translateX(5px);
-        transition: font-size .2s ease .2s, transform .2s ease .2s;
-        vertical-align: middle;
-        font-size: 22px;
-    }
+}
+.badge-email{
+    
+}
+.layout-content{
+    padding: 15px;
+    min-height: 280px;
+    background: #fff;
+    margin-top: 0px;
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+.header-container{
+    background-color: #0b78b9 !important;
+    display: flex;
+    height: 84px;
+    justify-content: center;
+    align-items: center;
+}
 </style>
+
 <template>
     <div class="layout">
-        <Layout class="layout-container">
-            <Sider ref="side1" hide-trigger collapsible :collapsed-width="78" v-model="isCollapsed">
-                <Menu active-name="1-2" theme="dark" width="auto" :class="menuitemClasses">
-                    <MenuItem name="1-1">
-                        <Icon type="ios-navigate"></Icon>
-                        <span>Option 1</span>
-                    </MenuItem>
-                    <MenuItem name="1-2">
-                        <Icon type="search"></Icon>
-                        <span>Option 2</span>
-                    </MenuItem>
-                    <MenuItem name="1-3">
-                        <Icon type="settings"></Icon>
-                        <span>Option 3</span>
-                    </MenuItem>
+        <Layout :style="{ height: '100%' }">
+            <Header style="padding: 0 0px; background-color: #0b78b9;">
+                <Menu class="header-container"  mode="horizontal" theme="dark" active-name="1">
+                    <div class="layout-logo">
+                        <img src=""  />
+                    </div>
+                    <div class="project-title">标题</div>
+                    <div class="layout-nav">
+                        <!-- <MenuItem name="1">
+                            总览
+                        </MenuItem>
+                        <MenuItem name="2">
+                            <Badge class="badge-email" count="100" overflow-count="99">
+                               <Icon type="ios-email-outline" size="30"></Icon>
+                            </Badge>
+                        </MenuItem> -->
+                        <MenuItem name="1">
+                            <Dropdown trigger="click">
+                                <a style="color: #fff" href="javascript:void(0)">
+                                    欢迎您， {{ getUserName }}
+                                    <Icon type="arrow-down-b"></Icon>
+                                </a>
+                                <DropdownMenu slot="list">
+                                    <DropdownItem @click.native="logout">注销</DropdownItem>
+                                </DropdownMenu>
+                            </Dropdown>
+                        </MenuItem>
+                    </div>
                 </Menu>
-            </Sider>
-            <Layout>
-                <Header :style="{padding: 0}" class="layout-header-bar">
-                    <Icon @click.native="collapsedSider" :class="rotateIcon" :style="{margin: '20px 20px 0'}" type="navicon-round" size="24"></Icon>
-                </Header>
-                <Content :style="{margin: '20px', background: '#fff', minHeight: '260px'}">
-                    Content
-                </Content>
+            </Header>
+            <Layout class="layout-center" >
+                <div class="left-slide">
+                    <Sider hide-trigger class="layout-slide" :width="240">
+                    <Menu  active-name="1-2" theme="dark" width="auto" :open-names="['1']">
+                        <Submenu v-for="(item, index) in leftMenuList" :name="index" :key="index">
+                            <template slot="title">
+                                <Icon :type="item.icon"></Icon>
+                                {{ item.title }}
+                            </template>
+                            <router-link
+                                v-for="(child, index2) in item.children"
+                                :key="index2"
+                                :to="`${item.path}/${child.path}`"
+                            >
+                                <MenuItem
+                                    :name="`${index}-${index2}`"
+                                >
+                                    {{ child.title }}
+                                </MenuItem>
+                            </router-link>
+                        </Submenu>
+                    </Menu>
+                    </Sider>
+                </div>
+                <Layout :style="isHome ? '' : 'padding: 5px;'">
+                    <!-- <Breadcrumb :style="{margin: '24px 0'}">
+                        <BreadcrumbItem>Home</BreadcrumbItem>
+                        <BreadcrumbItem>Components</BreadcrumbItem>
+                        <BreadcrumbItem>Layout</BreadcrumbItem>
+                    </Breadcrumb> -->
+                    <Content class="layout-content" :style="isHome ? 'padding: 0px;' : ''" >
+                        <router-view></router-view>
+                    </Content>
+                </Layout>
             </Layout>
         </Layout>
     </div>
 </template>
+
 <script>
+    import { mapState, mapGetters } from 'vuex';
+    import userApi from '@/api/user';
     export default {
-        data () {
+        data() {
             return {
-                isCollapsed: false
+
             }
         },
+        created() {
+            
+        },
+        mounted() {
+            console.log(this.$store.state.app.leftMenuList);
+        },
         computed: {
-            rotateIcon () {
-                return [
-                    'menu-icon',
-                    this.isCollapsed ? 'rotate-icon' : ''
-                ];
-            },
-            menuitemClasses () {
-                return [
-                    'menu-item',
-                    this.isCollapsed ? 'collapsed-menu' : ''
-                ]
+            ...mapState({
+                leftMenuList: state => state.app.leftMenuList,
+                username: state => state.user.username
+            }),
+            ...mapGetters({
+                getUserName: 'user/getUserName'
+            }),
+            isHome() {
+                let name = this.$route.name;
+                if (name == 'Home/Index') {
+                    return true;
+                } else {
+                    return false;
+                }
             }
         },
         methods: {
-            collapsedSider () {
-                this.$refs.side1.toggleCollapse();
+            async logout() {
+                const res = await userApi.logout();
+                if (res.data.meta.code == 200) {
+                    // 清除用户名
+                    localStorage.removeItem('inspec_username');
+                    this.$router.push('/login');
+                }
             }
+        },
+        beforeRouteEnter(to, from, next) {
+            console.log('===');
+            userApi.getAuth()
+                .then((res) => {
+                    next();
+                })
         }
     }
 </script>

@@ -13,7 +13,7 @@ function resolve (dir) {
 module.exports = {
   context: path.resolve(__dirname, '../'),
   entry: {
-    app: './src/main.js'
+    app: ['babel-polyfill', './src/main.js']
   },
   output: {
     path: config.build.assetsRoot,
@@ -38,9 +38,18 @@ module.exports = {
       },
       {
         test: /\.js$/,
+        // test: /iview.src.*?js$/,
         loader: 'babel-loader',
         include: [resolve('src'), resolve('test'), resolve('node_modules/webpack-dev-server/client')]
       },
+      {
+        test: /iview.src.*?js$/,
+        loader: 'babel-loader'
+      },
+      // {
+      //   test: /flv.js.src.*?js$/,
+      //   loader: 'babel-loader'
+      // },
       {
         test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
         loader: 'url-loader',
