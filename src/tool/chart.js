@@ -64,12 +64,13 @@ export default {
             });
         this[chartName].changeData(dv);
     },
-    createBasicColumnChart(id, list) {
+    // 基本柱状图
+    createBasicColumnChart(id, list, width = 650, height = 500) {
           var chart = new G2.Chart({
             container: id,
             // forceFit: true,
-            width: 650,
-            height: 500
+            width,
+            height
           });
           chart.source(list);
           chart.scale('sales', {
@@ -78,14 +79,15 @@ export default {
           chart.interval().position('year*sales');
           chart.render();
     },
-    createFoldChart(id, fields, list) {
+    // 分组柱状图
+    createFoldChart(id, fields, list, config={ key: '类型', value: '数量', marginRatio: 1 / 32 }) {
         const ds = new DataSet();
         var dv = ds.createView().source(list);
         dv.transform({
             type: 'fold',
             fields, // 展开字段集
-            key: '类型', // key字段
-            value: '数量' // value字段
+            key: config.key, // key字段
+            value: config.value // value字段
         });
 
         var chart = new G2.Chart({
@@ -94,22 +96,22 @@ export default {
             height: 350
         });
         chart.source(dv);
-        chart.interval().position('类型*数量').color('name')
-        .label('数量', { offset: 5 }).size(50)
+        chart.interval().position(`${config.key}*${config.value}`).color('name')
+        .label(config.value, { offset: 5 }).size(50)
         .adjust([{
             type: 'dodge',
-            marginRatio: 1 / 32
+            marginRatio: config.marginRatio
         }]);
         chart.render();
         return chart;
     },
-    changeFoldChartData(chartName, fields, list) {
+    changeFoldChartData(chartName, fields, list, config={ key: '类型', value: '数量' }) {
         const dv = new DataSet.DataView();
         dv.source(list).transform({
             type: 'fold',
             fields: fields, // 展开字段集
-            key: '类型', // key字段
-            value: '数量' // value字段
+            key: config.key, // key字段
+            value: config.value // value字段
         });
         this[chartName].changeData(dv);
     },
