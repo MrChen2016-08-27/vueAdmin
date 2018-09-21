@@ -118,8 +118,8 @@ a{
             <Layout class="layout-center" >
                 <div class="left-slide">
                     <Sider hide-trigger class="layout-slide" :width="240">
-                    <Menu  active-name="1-2" theme="dark" width="auto" :open-names="['1']">
-                        <Submenu v-for="(item, index) in leftMenuList" :name="index" :key="index">
+                    <Menu  :active-name="activeName" theme="dark" width="auto" :open-names="oepnNames">
+                        <Submenu v-for="(item, index) in leftMenuList" :name="item.name" :key="index">
                             <template slot="title">
                                 <Icon :type="item.icon"></Icon>
                                 {{ item.title }}
@@ -130,7 +130,7 @@ a{
                                 :to="`${item.path}/${child.path}`"
                             >
                                 <MenuItem
-                                    :name="`${index}-${index2}`"
+                                    :name="child.meta.menuKey"
                                 >
                                     {{ child.title }}
                                 </MenuItem>
@@ -184,6 +184,15 @@ a{
                 } else {
                     return false;
                 }
+            },
+            activeName() {
+                let info = this.$route.matched.find((item) => {
+                    return item.meta.menuKey;
+                });
+                return info.meta.menuKey;
+            },
+            oepnNames() {
+                return this.$route.name.split("/");
             }
         },
         methods: {
