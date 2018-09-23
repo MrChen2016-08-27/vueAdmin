@@ -10,7 +10,7 @@
 
 <script>
 import HeaderTitle from '@/components/HeaderTitle';
-import { getRoleList } from '@/api/role';
+import { getRoleList } from '@/api/user';
 
 export default {
     name: 'AuthorityList',

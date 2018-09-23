@@ -155,8 +155,10 @@ a{
 </template>
 
 <script>
-    import { mapState, mapGetters } from 'vuex';
+    import { mapState, mapGetters, mapActions } from 'vuex';
     import userApi from '@/api/user';
+    import { router } from '@/router';
+
     export default {
         data() {
             return {
@@ -189,7 +191,10 @@ a{
                 let info = this.$route.matched.find((item) => {
                     return item.meta.menuKey;
                 });
-                return info.meta.menuKey;
+                if (info) {
+                    return info.meta.menuKey;
+                }
+                return;
             },
             oepnNames() {
                 return this.$route.name.split("/");
@@ -206,10 +211,13 @@ a{
             }
         },
         beforeRouteEnter(to, from, next) {
-            console.log('===');
+            
             userApi.getAuth()
                 .then((res) => {
-                    next();
+                    router.app.$store.dispatch('app/filterLeftMenus').then(() => next());
+                    // appStore.actions.filterLeftMenus(store).then(() => {
+                    //     next();
+                    // });
                 })
         }
     }

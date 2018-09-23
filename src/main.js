@@ -24,5 +24,6 @@ new Vue({
     template: '<App/>',
     created() {
         this.$store.commit('app/setLeftMenuList', appRouter);
+        // this.$store.dispatch('app/filterLeftMenus', appRouter);
     }
 })

@@ -24,7 +24,7 @@
 
 <script>
 import HeaderTitle from '@/components/HeaderTitle';
-
+import { getRoleMenus } from '@/api/user';
 export default {
     name: 'AuthorityManager',
     data() {
@@ -49,7 +49,14 @@ export default {
     mounted() {
 
     },
+    created() {
+
+    },
     methods: {
+        async getRoleMenus() {
+            let { id } = this.$route.query; 
+            await getRoleMenus(id);
+        },
         changeCheck(value) {
 
         },

@@ -17,7 +17,8 @@ axios.interceptors.request.use(
     },
     err => {
         return Promise.reject(err);
-});
+    }
+);
 
 axios.interceptors.response.use((response) => {
     const { data } = response;

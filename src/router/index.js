@@ -5,7 +5,7 @@ const Login = () => import('@/views/login/Login');
 const Home = () => import('@/views/home/Index');
 
 const RoleList = () => import('@/views/systemManager/RoleList');
-const AuthorityManager = () => import('@/views/systemManager/AuthorityManager');
+const AuthorityManager = () => import('@/views/systemManager/AuthManager');
 const OrganizationList = () => import('@/views/systemManager/OrganizationList');
 const UserList = () => import('@/views/systemManager/UserList');
 
