@@ -1,17 +1,25 @@
 const user = {
     namespaced: true,
     state: {
-        username: '未登陆'
+        username: null
     },
     mutations: {
         setUserName(state, username) {
-            localStorage.setItem('inspec_username', username);
-            state.username = localStorage.getItem('inspec_username');
+            localStorage.setItem('inspec_username', username)
+            state.username = localStorage.getItem('inspec_username')
         }
     },
     getters: {
-        getUserName: state => localStorage.getItem('inspec_username') || state.username
+        getUserName: state => {
+            let username =
+                state.username || localStorage.getItem('inspec_username')
+            if (username) {
+                return username
+            } else {
+                return '未登录'
+            }
+        }
     }
 }
 
-export default user;
+export default user

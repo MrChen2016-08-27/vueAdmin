@@ -1,8 +1,10 @@
 <style lang='less' scoped>
-a{
+@primary-color: #fff;
+@primary-color-2: #515a6e;
+a {
     color: #666666;
 }
-.layout{
+.layout {
     border: 1px solid #d7dde4;
     background: #f5f7f9;
     position: relative;
@@ -10,30 +12,31 @@ a{
     overflow: hidden;
     height: 100%;
 }
-.layout-logo{
-    position: absolute;
+.layout-logo {
+    position: relative;
     display: flex;
-    background: #126496;
+    background: @primary-color-2;
     left: 0;
     top: 0;
     width: 220px;
     height: 84px;
     justify-content: center;
     align-items: center;
-    >img{
+    > img {
         width: 58px;
     }
 }
-.project-title{
+.project-title {
     position: relative;
     font-size: 28px;
-    color: #ffffff;
+    color: #333333;
     flex: 1;
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
+    padding: 0px 16px;
     align-items: center;
 }
-.layout-nav{
+.layout-nav {
     width: 330px;
     height: 84px;
     margin: 0 auto;
@@ -44,28 +47,27 @@ a{
     justify-content: flex-end;
     align-items: center;
 }
-.layout-center{
+.layout-center {
     height: 100%;
     overflow: hidden;
     position: relative;
-    .left-slide{
+    .left-slide {
         width: 220px;
         min-width: 220px;
         flex: 0 0 220px;
         overflow: hidden;
         position: relative;
         height: 100%;
-        .layout-slide{
-            background-color: #26364d;
+        .layout-slide {
+            background-color: @primary-color-2;
             height: 100%;
             overflow-y: auto;
         }
     }
 }
-.badge-email{
-    
+.badge-email {
 }
-.layout-content{
+.layout-content {
     padding: 15px;
     min-height: 280px;
     background: #fff;
@@ -74,8 +76,8 @@ a{
     overflow-x: hidden;
     overflow-y: auto;
 }
-.header-container{
-    background-color: #0b78b9 !important;
+.header-container {
+    background-color: @primary-color !important;
     display: flex;
     height: 84px;
     justify-content: center;
@@ -87,11 +89,11 @@ a{
     <div class="layout">
         <Layout :style="{ height: '100%' }">
             <Header style="padding: 0 0px; background-color: #0b78b9;">
-                <Menu class="header-container"  mode="horizontal" theme="dark" active-name="1">
+                <Menu class="header-container" mode="horizontal" theme="dark" active-name="1">
                     <div class="layout-logo">
-                        <img src=""  />
+                        <img src="" />
                     </div>
-                    <div class="project-title">标题</div>
+                    <div class="project-title">后台管理系统</div>
                     <div class="layout-nav">
                         <!-- <MenuItem name="1">
                             总览
@@ -102,41 +104,32 @@ a{
                             </Badge>
                         </MenuItem> -->
                         <MenuItem name="1">
-                            <Dropdown trigger="click">
-                                <a style="color: #fff" href="javascript:void(0)">
-                                    欢迎您， {{ getUserName }}
-                                    <Icon type="arrow-down-b"></Icon>
-                                </a>
-                                <DropdownMenu slot="list">
-                                    <DropdownItem @click.native="logout">注销</DropdownItem>
-                                </DropdownMenu>
-                            </Dropdown>
+                        <Dropdown trigger="click">
+                            <a style="color: #333" href="javascript:void(0)">
+                                欢迎您， {{ getUserName }}
+                                <Icon type="arrow-down-b"></Icon>
+                            </a>
+                            <DropdownMenu slot="list">
+                                <DropdownItem @click.native="logout">注销</DropdownItem>
+                            </DropdownMenu>
+                        </Dropdown>
                         </MenuItem>
                     </div>
                 </Menu>
             </Header>
-            <Layout class="layout-center" >
+            <Layout class="layout-center">
                 <div class="left-slide">
                     <Sider hide-trigger class="layout-slide" :width="240">
-                    <Menu  :active-name="activeName" theme="dark" width="auto" :open-names="oepnNames">
-                        <Submenu v-for="(item, index) in leftMenuList" :name="item.name" :key="index">
-                            <template slot="title">
-                                <Icon :type="item.icon"></Icon>
-                                {{ item.title }}
-                            </template>
-                            <router-link
-                                v-for="(child, index2) in item.children"
-                                :key="index2"
-                                :to="`${item.path}/${child.path}`"
-                            >
-                                <MenuItem
-                                    :name="child.meta.menuKey"
-                                >
-                                    {{ child.title }}
+                        <Menu :active-name="activeName" theme="dark" width="auto" :open-names="oepnNames">
+                            <Submenu v-for="(item, index) in leftMenuList" :name="item.name" :key="index">
+                                <template slot="title">
+                                    <Icon :type="item.icon"></Icon>
+                                    {{ item.title }}
+                                </template>
+                                <MenuItem v-for="(child, index2) in item.children" :key="index2" @click.native="goMenuRouter(`${item.path}/${child.path}`)" :name="child.meta.menuKey"> {{ child.title }}
                                 </MenuItem>
-                            </router-link>
-                        </Submenu>
-                    </Menu>
+                            </Submenu>
+                        </Menu>
                     </Sider>
                 </div>
                 <Layout :style="isHome ? '' : 'padding: 5px;'">
@@ -145,7 +138,7 @@ a{
                         <BreadcrumbItem>Components</BreadcrumbItem>
                         <BreadcrumbItem>Layout</BreadcrumbItem>
                     </Breadcrumb> -->
-                    <Content class="layout-content" :style="isHome ? 'padding: 0px;' : ''" >
+                    <Content class="layout-content" :style="isHome ? 'padding: 0px;' : ''">
                         <router-view></router-view>
                     </Content>
                 </Layout>
@@ -157,7 +150,7 @@ a{
 <script>
     import { mapState, mapGetters, mapActions } from 'vuex';
     import userApi from '@/api/user';
-    import { router } from '@/router';
+    import { router, appRouter } from '@/router';
 
     export default {
         data() {
@@ -166,10 +159,10 @@ a{
             }
         },
         created() {
-            
+            console.log('appRouterXXX', appRouter);
         },
         mounted() {
-            console.log(this.$store.state.app.leftMenuList);
+   
         },
         computed: {
             ...mapState({
@@ -200,25 +193,37 @@ a{
                 return this.$route.name.split("/");
             }
         },
+        watch: {
+            '$route': function (to, form) {
+                console.log(to, 'newRouter');
+            }
+        },
         methods: {
             async logout() {
                 const res = await userApi.logout();
                 if (res.data.meta.code == 200) {
                     // 清除用户名
-                    localStorage.removeItem('inspec_username');
+                    localStorage.clear();
                     this.$router.push('/login');
                 }
+            },
+            goMenuRouter(target) {
+                console.log(target, 'target');
+                this.$router.push({ path: target });
             }
         },
-        beforeRouteEnter(to, from, next) {
-            
-            userApi.getAuth()
-                .then((res) => {
-                    router.app.$store.dispatch('app/filterLeftMenus').then(() => next());
-                    // appStore.actions.filterLeftMenus(store).then(() => {
-                    //     next();
-                    // });
-                })
+        async beforeRouteEnter(to, from, next) {
+            try{
+                await userApi.getAuth()
+                console.log('appRouter', appRouter);
+                router.app.$store.commit('app/setLeftMenuList', appRouter)
+                router.app.$store.dispatch('app/filterLeftMenus').then(() => next());
+            } catch (e) {
+                console.log('e', e);
+            }
+            // appStore.actions.filterLeftMenus(store).then(() => {
+            //     next();
+            // });
         }
     }
 </script>

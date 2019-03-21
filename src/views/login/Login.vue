@@ -1,16 +1,16 @@
 <template>
-    <div id="login" >
+    <div id="login">
         <img class="logo" src="" />
-        <Form class="login-form" ref="formInline" :model="formInline" :rules="ruleInline">
+        <Form @keyup.native.enter="handleSubmit('formInline')" class="login-form" ref="formInline" :model="formInline" :rules="ruleInline">
             <h3>账号登陆</h3>
             <FormItem prop="username">
                 <Input type="text" v-model="formInline.username" placeholder="用户名">
-                    <Icon type="ios-person-outline" slot="prepend"></Icon>
+                <Icon type="ios-person-outline" slot="prepend"></Icon>
                 </Input>
             </FormItem>
             <FormItem prop="password">
                 <Input type="password" v-model="formInline.password" placeholder="密码">
-                    <Icon type="ios-locked-outline" slot="prepend"></Icon>
+                <Icon type="ios-locked-outline" slot="prepend"></Icon>
                 </Input>
             </FormItem>
             <FormItem>
@@ -44,11 +44,11 @@
             }
         },
         created() {
-            getKey().then((res) => {
-                const { key } = res.data.data;
-                this.myEncrypt = new JSEncrypt();
-                this.myEncrypt.setPublicKey(key);
-            });
+            // getKey().then((res) => {
+            //     const { key } = res.data.data;
+            //     this.myEncrypt = new JSEncrypt();
+            //     this.myEncrypt.setPublicKey(key);
+            // });
         },
         methods: {
             ...mapMutations({
@@ -57,6 +57,7 @@
             handleSubmit(name) {
                 this.$refs[name].validate((valid) => {
                     if (valid) {
+                        console.log("valid", valid)
                         this.loginUser();
                     } else {
                         this.$Message.error('信息格式有误!');
@@ -64,19 +65,20 @@
                 })
             },
             loginUser() {
-                if (!this.myEncrypt) {
-                    return;
-                }
-                const password = this.myEncrypt.encrypt(this.formInline.password);
+                // if (!this.myEncrypt) {
+                //     return;
+                // }
+                // const password = this.myEncrypt.encrypt(this.formInline.password);
                 const form = {
-                    username: this.formInline.username,
-                    password
+                    mobile: this.formInline.username,
+                    password: this.formInline.password
                 }
                 login(form)
                     .then((res) => {
                         if (res.data.meta.code === 200) {
                             this.$router.push('/home/index');
-                            this.setUserName(form.username);
+                            let { user } = res.data.data;
+                            this.setUserName(user.username);
                         }
                     })
             }
@@ -88,7 +90,7 @@
 </script>
 
 <style lang="less" scoped>
-#login{
+#login {
     display: flex;
     height: 100%;
     position: relative;
@@ -96,27 +98,26 @@
     background-size: 100% 100%;
     justify-content: space-around;
     align-items: center;
-    .logo{
+    .logo {
         position: relative;
     }
 }
-.login-form{
+.login-form {
     @form-height: 360px;
     display: flex;
-    width:  @form-height;
+    width: @form-height;
     background-color: #fff;
     position: relative;
     flex-direction: column;
     justify-content: center;
     padding: 20px;
-    h3{
+    h3 {
         margin: 5px;
         text-align: center;
-        font-size: 18px;    
+        font-size: 18px;
     }
 }
-.signBtn{
-    
+.signBtn {
 }
 </style>
 

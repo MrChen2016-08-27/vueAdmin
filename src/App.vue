@@ -1,7 +1,7 @@
 <template>
-  <div id="app">
-    <router-view/>
-  </div>
+    <div id="app">
+        <router-view/>
+    </div>
 </template>
 
 <script>
@@ -23,19 +23,22 @@ export default {
 
 <style lang='less'>
 @import url('./styles/iView-cover.less');
-*{
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+@import url('./styles/common.less');
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
-html,body{
-  height: 100%;
-  min-width: 1280px;
-  font-size: 14px;
-  font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;
+html,
+body {
+    height: 100%;
+    min-width: 1280px;
+    font-size: 14px;
+    font-family: 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB',
+        'Microsoft YaHei', '微软雅黑', Arial, sans-serif;
 }
 #app {
-  height: 100%;
-  position: relative;
+    height: 100%;
+    position: relative;
 }
 </style>
