@@ -32,11 +32,14 @@
             <Button @click="submitContent" type="primary">提交</Button>
             <Button>取消</Button>
         </div>
+        <Upload :headers="getTokenHeader" style="dispaly: none;" ref="quillUpload" :action="getQuillUploadUrl" :on-success="uploadQuillFile">
+            <Button ref="quillUpload-btn" type="ghost" icon="ios-cloud-upload-outline">Upload files</Button>
+        </Upload>
     </div>
 </template>
 
 <script>
-import { uploadImgAction } from '@/api/upload'
+import { uploadImgAction, uploadFileAction } from '@/api/upload'
 import contentApi from '@/api/content'
 import HeaderTitle from '@/components/HeaderTitle';
 import 'quill/dist/quill.core.css'
@@ -51,6 +54,8 @@ export default {
             editorOption: {},
             uploadImgAction,
             content: '',
+            addRange: null,
+            quillUploadType: '',
             formRules: {
                 title: [
                     { required: true, message: '请输入标题', trigger: 'blur' }
@@ -68,6 +73,10 @@ export default {
         quillEditor,
         HeaderTitle
     },
+    mounted () {
+        this.$refs.myQuillEditor.quill.getModule('toolbar').addHandler('image', this.imgHandler)
+        this.$refs.myQuillEditor.quill.getModule('toolbar').addHandler('video', this.videoHandler)
+    },
     computed: {
         getDetailId () {
             return this.$router.id;
@@ -75,6 +84,13 @@ export default {
         getTokenHeader () {
             let Authorization = localStorage.getItem('token');
             return { Authorization }
+        },
+        getQuillUploadUrl () {
+            if (this.quillUploadType == 'img') {
+                return uploadImgAction;
+            } else {
+                return uploadFileAction;
+            }
         }
     },
     methods: {
@@ -100,6 +116,27 @@ export default {
                 await contentApi.addContent(params);
             }
             this.$router.push({ name: 'Content/ContentList' });
+        },
+        imgHandler (state) {
+            this.addRange = this.$refs.myQuillEditor.quill.getSelection()
+            if (state) {
+                let fileInput = this.$refs['quillUpload-btn'].$el;
+                fileInput.click() // 加一个触发事件
+            }
+            this.quillUploadType = 'img';
+        },
+        videoHandler (state) {
+            this.addRange = this.$refs.myQuillEditor.quill.getSelection()
+            if (state) {
+                let fileInput = document.getElementById('imgInput')
+                fileInput.click() // 加一个触发事件
+            }
+            this.quillUploadType = 'video';
+        },
+        // 上传富文本内的文件
+        uploadQuillFile (response, file, fileList) {
+            const { data } = response;
+            console.log(data);
         }
     }
 }
