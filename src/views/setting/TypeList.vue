@@ -70,6 +70,26 @@ export default {
                     minWidth: 100
                 },
                 {
+                    title: '创建时间',
+                    key: 'createdAt',
+                    minWidth: 100,
+                    render: (h, params) => {
+                        if (params.row.createdAt) {
+                            return h('label', this.$moment(params.row.createdAt).format("YYYY-MM-DD HH:mm:ss"));
+                        }
+                    }
+                },
+                {
+                    title: '修改时间',
+                    key: 'updatedAt',
+                    minWidth: 100,
+                    render: (h, params) => {
+                        if (params.row.updatedAt) {
+                            return h('label', this.$moment(params.row.updatedAt).format("YYYY-MM-DD HH:mm:ss"));
+                        }
+                    }
+                },
+                {
                     title: '最后修改人',
                     key: 'cuser',
                     minWidth: 100
@@ -111,7 +131,7 @@ export default {
                 keyword: '',
                 pageNumber: 1,
                 pageSize: 10,
-                columnId: this.columnId
+                columnId: ''
             }
         }
     },
@@ -121,18 +141,19 @@ export default {
             default: ''
         }
     },
+    watch: {
+        columnId (newColumnId) {
+            this.params.columnId = newColumnId;
+            this.getList();
+        }
+    },
     created () {
+        this.params.columnId = this.columnId;
         this.getList();
     },
     components: {
         HeaderTitle,
         DelModal
-    },
-    watch: {
-        columnId (newColumnId, oldColumnId) {
-            this.params.columnId = newColumnId;
-            this.resetList();
-        }
     },
     methods: {
         ...ListMethods(typeApi.getTypeList, () => {}),
@@ -160,6 +181,7 @@ export default {
         submitType (refName) {
             if (this.columnId) {
                 this.formInline.columnId = this.columnId;
+                console.log('this.columnId', this.columnId);
             }
             this.$refs[refName].validate(async (valid) => {
                 if (valid) {

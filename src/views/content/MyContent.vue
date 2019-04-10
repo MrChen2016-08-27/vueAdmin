@@ -1,6 +1,6 @@
 <template>
     <div id="type-list">
-        <header-title icon="person-stalker">内容列表</header-title>
+        <header-title icon="person-stalker">我的内容</header-title>
         <div class="page-flex-header">
             <div class="left-flex">
                 <Button @click="viewAddContent()" type="primary">新增内容</Button>
@@ -173,15 +173,15 @@ export default {
         DelModal
     },
     methods: {
-        ...ListMethods(contentApi.getContentList, () => {}),
-        deleteContent: contentApi.deleteContent,
+        ...ListMethods(contentApi.getMyContentList, () => {}),
+        deleteContent: contentApi.deleteMyContent,
         viewAddContent(refName) {
             this.selectId = null;
-            this.$router.push({ name: 'Content/Detail' });
+            this.$router.push({ name: 'Content/MyDetail' });
         },
         async viewEditContent (id) {
             this.selectId = id;
-            this.$router.push({ name: 'Content/Detail', query: { id } });
+            this.$router.push({ name: 'Content/MyDetail', query: { id } });
         },
         viewDeleteContent (id, name) {
             this.selectId = id;
@@ -199,9 +199,9 @@ export default {
             this.$refs[refName].validate(async (valid) => {
                 if (valid) {
                     if (this.selectId) {
-                        await contentApi.updateContent(this.formInline);
+                        await contentApi.updateMyContent(this.formInline);
                     } else {
-                        await contentApi.addContent(this.formInline);
+                        await contentApi.addMyContent(this.formInline);
                     }
                     this.modal1 = false;
                     this.resetList();

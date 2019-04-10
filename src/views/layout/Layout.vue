@@ -215,8 +215,6 @@ a {
         async beforeRouteEnter(to, from, next) {
             try{
                 await userApi.getAuth()
-                console.log('appRouter', appRouter);
-                router.app.$store.commit('app/setLeftMenuList', appRouter)
                 router.app.$store.dispatch('app/filterLeftMenus').then(() => next());
             } catch (e) {
                 console.log('e', e);

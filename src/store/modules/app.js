@@ -1,6 +1,6 @@
 import { List } from 'immutable'
 import { getRoleMenus, getTokenUser } from '@/api/user'
-import { appRouter } from '@/router/index'
+import { router, appRouter } from '@/router';
 import _ from 'lodash/lang'
 
 const app = {
@@ -15,7 +15,7 @@ const app = {
     },
     actions: {
         async filterLeftMenus({ state, commit, rootState }) {
-            const list = [...state.leftMenuList]
+            const list = [...appRouter]
             const res = await getTokenUser()
             const { menus } = res.data.data
             console.log(res.data.meta, 'res.data.meta')

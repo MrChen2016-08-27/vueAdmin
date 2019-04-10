@@ -88,7 +88,7 @@
             <Button>取消</Button>
         </div>
         <Upload :show-upload-list="false" :before-upload="brefoQuillUpload" :headers="getTokenHeader" style="display: none;" ref="quillUpload" :action="getQuillUploadUrl" :on-success="uploadQuillFile">
-            <Button ref="quillUpload-btn" icon="ios-cloud-upload-outline" ghost>Upload files</Button>
+            <Button ref="quillUpload-btn" type="ghost" icon="ios-cloud-upload-outline">Upload files</Button>
         </Upload>
     </div>
 </template>
@@ -229,7 +229,7 @@ export default {
             this.typeList = data.data.list;
         },
         async getContentDetail (id) {
-            const { data } = await contentApi.getContent(id);
+            const { data } = await contentApi.getMyContent(id);
             let form = Object.assign(this.form, data.data);
             this.$set(this, 'form', form);
         },
@@ -268,11 +268,11 @@ export default {
                 if (valid) {
                     if (this.getDetailId) {
                         params.id = this.getDetailId;
-                        await contentApi.updateContent(params);
+                        await contentApi.updateMyContent(params);
                     } else {
-                        await contentApi.addContent(params);
+                        await contentApi.addMyContent(params);
                     }
-                    this.$router.push({ name: 'Content/ContentList' });
+                    this.$router.push({ name: 'Content/MyContentList' });
                 }
             })
         },

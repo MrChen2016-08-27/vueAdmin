@@ -4,9 +4,16 @@ import Layout from '@/views/layout/Layout'
 const Login = () => import('@/views/login/Login')
 const Home = () => import('@/views/home/Index')
 
+const ContentReview = () => import('@/views/review/ContentReview')
+const ContentReviewDetail = () => import('@/views/review/ContentReviewDetail')
+
 const ContentList = () => import('@/views/content/ContentList')
 const ContentDetail = () => import('@/views/content/ContentDetail')
 
+const MyContent = () => import('@/views/content/MyContent')
+const MyContentDetail = () => import('@/views/content/MyContentDetail')
+
+const ModuleList = () => import('@/views/setting/ModuleList')
 const ColumnList = () => import('@/views/setting/ColumnList')
 const TypeList = () => import('@/views/setting/TypeList')
 
@@ -37,6 +44,23 @@ const otherRouter = [
         ]
     },
     {
+        path: '/review',
+        component: Layout,
+        icon: 'clipboard',
+        title: '审核管理',
+        children: [
+            {
+                path: 'contentDetail',
+                name: 'Review/ContentDetail',
+                component: ContentReviewDetail,
+                title: '内容审核',
+                meta: {
+                    menuKey: 'Review'
+                }
+            }
+        ]
+    },
+    {
         path: '/content',
         component: Layout,
         icon: 'clipboard',
@@ -49,6 +73,15 @@ const otherRouter = [
                 title: '综合内容管理',
                 meta: {
                     menuKey: 'Content'
+                }
+            },
+            {
+                path: 'myDetail',
+                name: 'Content/MyDetail',
+                component: MyContentDetail,
+                title: '我的内容管理',
+                meta: {
+                    menuKey: 'MyContent'
                 }
             }
         ]
@@ -93,6 +126,24 @@ const otherRouter = [
 // 作为 Layout子组件 展示, 并为左侧菜单显示的路由
 export const appRouter = [
     {
+        path: '/review',
+        name: 'Review',
+        component: Layout,
+        icon: 'clipboard',
+        title: '审核管理',
+        children: [
+            {
+                path: 'content',
+                name: 'Review/ContentList',
+                component: ContentReview,
+                title: '内容审核',
+                meta: {
+                    menuKey: 'Review'
+                }
+            }
+        ]
+    },
+    {
         path: '/content',
         name: 'Content',
         component: Layout,
@@ -107,6 +158,15 @@ export const appRouter = [
                 meta: {
                     menuKey: 'Content'
                 }
+            },
+            {
+                path: 'myContent',
+                name: 'Content/MyContentList',
+                component: MyContent,
+                title: '我的内容管理',
+                meta: {
+                    menuKey: 'MyContent'
+                }
             }
         ]
     },
@@ -117,6 +177,15 @@ export const appRouter = [
         icon: 'clipboard',
         title: '基本设置',
         children: [
+            {
+                path: 'moduleList',
+                name: 'Setting/ModuleList',
+                component: ModuleList,
+                title: '模块设置',
+                meta: {
+                    menuKey: 'Module'
+                }
+            },
             {
                 path: 'columnList',
                 name: 'Setting/ColumnList',

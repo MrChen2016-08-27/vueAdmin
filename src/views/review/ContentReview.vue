@@ -1,9 +1,8 @@
 <template>
-    <div id="type-list">
-        <header-title icon="person-stalker">内容列表</header-title>
+    <div id="review-list">
+        <header-title icon="person-stalker">内容审核</header-title>
         <div class="page-flex-header">
             <div class="left-flex">
-                <Button @click="viewAddContent()" type="primary">新增内容</Button>
             </div>
             <div class="seach-header-bar">
                 <Input class="input-text" v-model="keyword"></Input>
@@ -14,16 +13,13 @@
         <div class="page-footer">
             <Page @on-change="changePage" :page-size="params.pageSize" :current="params.pageNumber" :total="total" show-elevator></Page>
         </div>
-        <del-modal v-model="delModal" :delName="formInline.name" :deleteMethod="deleteContent" :delId="selectId" @deleteSuccess="resetList()"></del-modal>
     </div>
 </template>
 
-
 <script>
-import contentApi from '@/api/content'
+import reviewApi from '@/api/review'
 import HeaderTitle from '@/components/HeaderTitle';
 import ListMethods from '@/tool/list';
-import DelModal from '@/components/DelModal';
 
 export default {
     data () {
@@ -31,19 +27,9 @@ export default {
             marginRight: '5px'
         }
         return {
-            selectId: '',
-            keyword: '',
             loading: false,
-            modal1: false,
-            delModal: false,
-            del_loading: false,
             formInline: {
                 name: ''
-            },
-            ruleInline: {
-                name: [
-                    { required: true, message: '请输入内容标题', trigger: 'blur' }
-                ],
             },
             columns1: [
                 {
@@ -60,12 +46,12 @@ export default {
                 {
                     title: '描述',
                     key: 'description',
-                    minWidth: 160,
+                    minWidth: 140,
                 },
                 {
                     title: '创建时间',
                     key: 'createdAt',
-                    minWidth: 160,
+                    minWidth: 140,
                     render: (h, params) => {
                         if (params.row.createdAt) {
                             return h('label', this.$moment(params.row.createdAt).format("YYYY-MM-DD HH:mm:ss"));
@@ -73,19 +59,19 @@ export default {
                     }
                 },
                 {
-                    title: '修改时间',
-                    key: 'updatedAt',
-                    minWidth: 160,
-                    render: (h, params) => {
-                        if (params.row.updatedAt) {
-                            return h('label', this.$moment(params.row.updatedAt).format("YYYY-MM-DD HH:mm:ss"));
-                        }
-                    }
+                    title: '创建人',
+                    key: 'cuser',
+                    minWidth: 120
+                },
+                {
+                    title: '最后修改人',
+                    key: 'muser',
+                    minWidth: 120
                 },
                 {
                     title: '审核状态',
                     key: 'reviewStatus',
-                    minWidth: 100,
+                    width: 100,
                     render: (h, params) => {
                         let text = '';
                         let color = '';
@@ -114,107 +100,85 @@ export default {
                     }
                 },
                 {
-                    title: '创建人',
-                    key: 'cuser',
-                    minWidth: 120
+                    title: '审核人',
+                    key: 'reviewUser',
+                    minWidth: 120,
+                    render: (h, params) => {
+                        let reviews = params.row.Reviews;
+                        if (reviews.length > 0) {
+                            return h('label', reviews[0].reviewUser);
+                        }
+                    }
                 },
                 {
-                    title: '最后修改人',
-                    key: 'muser',
-                    minWidth: 120
+                    title: '审核时间',
+                    key: 'reviewUser',
+                    minWidth: 140,
+                    render: (h, params) => {
+                        let reviews = params.row.Reviews;
+                        if (reviews.length > 0) {
+                            let time = this.$moment(reviews[0].createdAt).format("YYYY-MM-DD HH:mm:ss");
+                            return h('label', time);
+                        }
+                    }
                 },
                 {
                     title: '操作',
                     key: 'action',
-                    width: 160,
+                    width: 120,
                     render: (h, params) => {
-                        return h('div', [
-                            h('Button', {
-                                props: {
-                                    type: 'primary'
-                                },
-                                on: {
-                                   click: () => {
-                                      this.viewEditContent(params.row.id)
-                                   }
-                                },
-                                style: btnStyle
-                            }, '编辑'),
-                            h('Button', {
-                                props: {
-                                    type: 'error'
-                                },
-                                on: {
-                                   click: () => {
-                                       this.viewDeleteContent(params.row.id, params.row.name)
-                                   }
+                        let reviews = params.row.Reviews;
+                        if (reviews.length > 0 && reviews[0].status == 1) {
+                            return h('div', {
+                                style: {
+                                    textAlign: 'center'
                                 }
-                            }, '删除'),
-                        ]);
+                            }, [
+                                h('Button', {
+                                    props: {
+                                        type: 'primary'
+                                    },
+                                    on: {
+                                       click: () => {
+                                          this.viewEditContent(params.row.id)
+                                       }
+                                    },
+                                    style: btnStyle
+                                }, '审核')
+                            ]);
+                        }
                     }
                 }
             ],
             data1: [],
             total: 0,
+            keyword: '',
             params: {
                 keyword: '',
                 pageNumber: 1,
                 pageSize: 10,
-                columnId: '',
-                typeId: ''
             }
         }
     },
     created () {
-        this.getList();
-    },
-    components: {
-        HeaderTitle,
-        DelModal
+        this.getList()
     },
     methods: {
-        ...ListMethods(contentApi.getContentList, () => {}),
-        deleteContent: contentApi.deleteContent,
-        viewAddContent(refName) {
-            this.selectId = null;
-            this.$router.push({ name: 'Content/Detail' });
-        },
-        async viewEditContent (id) {
-            this.selectId = id;
-            this.$router.push({ name: 'Content/Detail', query: { id } });
-        },
-        viewDeleteContent (id, name) {
-            this.selectId = id;
-            this.formInline.name = name;
-            this.delModal = true;
-        },
+        ...ListMethods(reviewApi.getReviewContentList, () => {}),
         changePage (page) {
             this.params.pageNumber = page
             this.getList()
         },
-        submitContent (refName) {
-            if (this.columnId) {
-                this.formInline.columnId = this.columnId;
-            }
-            this.$refs[refName].validate(async (valid) => {
-                if (valid) {
-                    if (this.selectId) {
-                        await contentApi.updateContent(this.formInline);
-                    } else {
-                        await contentApi.addContent(this.formInline);
-                    }
-                    this.modal1 = false;
-                    this.resetList();
-                }
-            })
-        },
+        viewEditContent (id) {
+            this.$router.push({ name: 'Review/ContentDetail', query: { id } });
+        }
+    },
+    components: {
+        HeaderTitle
     }
 }
 </script>
 
-
 <style lang="less" scoped>
-#type-list {
-}
-</style>
 
+</style>

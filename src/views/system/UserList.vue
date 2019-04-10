@@ -150,9 +150,8 @@ export default {
                     key: 'role',
                     minWidth: 80,
                     render: (h, params) => {
-  
                         let oLis = params.row.roles.map((role) => {
-                            let oTag = h('Tag', { props: { color: role.id == 1? 'red': 'green', type: 'border' }  }, role.name)
+                            let oTag = h('Tag', { props: { color: role.id == 1? 'primary': 'success' }  }, role.name)
                             return h('li', {
 
                             }, [ oTag ]);

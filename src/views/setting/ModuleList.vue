@@ -1,50 +1,41 @@
 <template>
-    <div id="column-list">
-        <header-title icon="person-stalker">栏目列表</header-title>
+    <div id="module-list">
+        <header-title icon="person-stalker">模块列表</header-title>
         <div class="page-flex-header">
             <div class="left-flex">
-                <Button @click="viewAddColumn('formInline')" type="primary">新增栏目</Button>
-                <Select @on-change="selectModuleId" v-model="params.moduleId" style="width:200px">
-                    <Option value="">全部</Option>
-                    <Option v-for="item in moduleList" :value="item.id" :key="item.id">{{ item.name }}</Option>
-                </Select>
+                <Button @click="viewAddModule('formInline')" type="primary">新增模块</Button>
             </div>
             <div class="seach-header-bar">
                 <Input class="input-text" v-model="keyword"></Input>
                 <Button @click="searchList" class="search-btn" shape="circle" type="primary" icon="ios-search"></Button>
             </div>
         </div>
-        <Table :loading="loading" :columns="columns1" :data="data1"></Table>
+        <Table :loading="loading" :columns="modules1" :data="data1"></Table>
         <div class="page-footer">
             <Page @on-change="changePage" :page-size="params.pageSize" :current="params.pageNumber" :total="total" show-elevator></Page>
         </div>
-        <Modal v-model="modal1" title="新增栏目">
+        <Modal v-model="modal1" title="新增模块">
             <Form ref="formInline" :model="formInline" :label-width="100" :rules="ruleInline">
                 <FormItem prop="name" label="名称">
                     <Input class="text-input" type="text" v-model="formInline.name"></Input>
                 </FormItem>
-                <FormItem prop="moduleId" label="所属模块">
-                    <Select v-model="formInline.moduleId" style="width:200px">
-                        <Option v-for="item in moduleList" :value="item.id" :key="item.id">{{ item.name }}</Option>
-                    </Select>
-                </FormItem>
             </Form>
             <div slot="footer">
                 <Button @click="modal1 = false">取消</Button>
-                <Button type="primary" @click="submitColumn('formInline')">确认</Button>
+                <Button type="primary" @click="submitModule('formInline')">确认</Button>
             </div>
         </Modal>
         <Modal v-model="delModal" width="360">
             <p slot="header" class="delete-modal-header">
                 <Icon type="ios-information-circle"></Icon>
-                <span>删除栏目</span>
+                <span>删除模块</span>
             </p>
             <div style="text-align:center">
                 <p>该操作将删除&nbsp;{{ formInline ? formInline.name : '' }}&nbsp;</p>
                 <p>您是否要删除?</p>
             </div>
             <div slot="footer">
-                <Button type="error" size="large" long :loading="del_loading" @click="deleteColumn(selectId)">删除</Button>
+                <Button type="error" size="large" long :loading="del_loading" @click="deleteModule(selectId)">删除</Button>
             </div>
         </Modal>
     </div>
@@ -53,7 +44,6 @@
 
 <script>
 import moduleApi from '@/api/module'
-import columnApi from '@/api/column'
 import HeaderTitle from '@/components/HeaderTitle';
 
 export default {
@@ -62,7 +52,6 @@ export default {
             marginRight: '5px'
         }
         return {
-            moduleList: [],
             selectId: '',
             keyword: '',
             loading: false,
@@ -70,18 +59,14 @@ export default {
             delModal: false,
             del_loading: false,
             formInline: {
-                name: '',
-                moduleId: ''
+                name: ''
             },
             ruleInline: {
                 name: [
-                    { required: true, message: '请输入栏目名称', trigger: 'blur' }
-                ],
-                moduleId: [
-                    { required: true, type: 'number',  message: '请选择模块', trigger: 'change' }
+                    { required: true, message: '请输入模块名称', trigger: 'blur' }
                 ],
             },
-            columns1: [
+            modules1: [
                 {
                     type: 'index',
                     align: 'center',
@@ -90,7 +75,7 @@ export default {
                 {
                     title: '名称',
                     key: 'name',
-                    minWidth: 100
+                    minWidth: 120
                 },
                 {
                     title: '创建时间',
@@ -120,7 +105,7 @@ export default {
                 {
                     title: '操作',
                     key: 'action',
-                    minWidth: 140,
+                    minWidth: 80,
                     render: (h, params) => {
                         return h('div', [
                             h('Button', {
@@ -129,29 +114,18 @@ export default {
                                 },
                                 on: {
                                    click: () => {
-                                      this.viewEditColumn(params.row.id)
+                                      this.viewEditModule(params.row.id)
                                    }
                                 },
                                 style: btnStyle
                             }, '编辑'),
                             h('Button', {
                                 props: {
-                                    type: 'info'
-                                },
-                                on: {
-                                   click: () => {
-                                      this.$router.push({ name: 'Setting/ColumnTypeList', params: { columnId: params.row.id } });
-                                   }
-                                },
-                                style: btnStyle
-                            }, '设置子分类'),
-                            h('Button', {
-                                props: {
                                     type: 'error'
                                 },
                                 on: {
                                    click: () => {
-                                       this.viewDeleteColumn(params.row.id, params.row.name)
+                                       this.viewDeleteModule(params.row.id, params.row.name)
                                    }
                                 }
                             }, '删除'),
@@ -170,84 +144,70 @@ export default {
     },
     created () {
         this.getModuleList()
-        this.getColumnList()
     },
     components: {
         HeaderTitle
     },
     methods: {
-        async getModuleList () {
-            const { data } = await moduleApi.getModuleList({
-                pageNumber: 1,
-                pageSize: 99999999
-            });
-            this.moduleList = data.data.list;
-        },
-        viewAddColumn (refName) {
+        viewAddModule (refName) {
             this.selectId = null;
             this.modal1 = true;
             this.$refs[refName].resetFields();
         },
-        async viewEditColumn (id) {
+        async viewEditModule (id) {
             this.selectId = id;
-            let { data } = await columnApi.getColumn(id);
+            let { data } = await moduleApi.getModule(id);
             this.formInline = data.data;
             this.modal1 = true;
         },
-        viewDeleteColumn (id, name) {
+        viewDeleteModule (id, name) {
             this.selectId = id;
             this.formInline.name = name;
             this.delModal = true;
         },
-        selectModuleId () {
-            this.params.pageNumber = 1;
-            this.params.pageSize = 10;
-            this.getColumnList();
-        },
-        resetColumnList () {
+        resetModuleList () {
             this.params = {
                 pageNumber: 1,
                 pageSize: 10,
-                keyword: '',
-                moduleId: '',
+                keyword: ''
             }
             this.keyword = '';
-            this.getColumnList();
+            this.getModuleList();
         },
         changePage (page) {
             this.params.pageNumber = page
-            this.getColumnList()
+            this.getModuleList()
         },
         searchList() {
             this.params.pageNumber = 1;
             this.params.pageSize = 10;
             this.params.keyword = this.keyword;
-            this.getColumnList();
+            this.getModuleList();
         },
-        async getColumnList () {
+        async getModuleList () {
             this.loading = true
-            const { data } = await columnApi.getColumnList(this.params)
+            const { data } = await moduleApi.getModuleList(this.params)
             this.data1 = data.data.list
             this.total = data.data.count
             this.loading = false;
         },
-        submitColumn (refName) {
+        submitModule (refName) {
             this.$refs[refName].validate(async (valid) => {
                 if (valid) {
                     if (this.selectId) {
-                        await columnApi.updateColumn(this.formInline);
+                        await moduleApi.updateModule(this.formInline);
                     } else {
-                        await columnApi.addColumn(this.formInline);
+                        await moduleApi.addModule(this.formInline);
                     }
                     this.modal1 = false;
-                    this.resetColumnList();
+                    this.resetModuleList();
                 }
             })
         },
-        async deleteColumn (id) {
-            await columnApi.deleteColumn(id);
+        async deleteModule (id) {
+            await moduleApi.deleteModule(id);
             this.delModal = false;
-            this.resetColumnList();
+            this.resetModuleList();
         }
     }
 }

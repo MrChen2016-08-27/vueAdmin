@@ -85,7 +85,8 @@ export default {
                         return h('div', [
                             h('Button', {
                                 props: {
-                                    type: 'ghost'
+                                    ghost: 'ghost',
+                                    type: 'info'
                                 },
                                 style: btnStyle,
                                 on: {

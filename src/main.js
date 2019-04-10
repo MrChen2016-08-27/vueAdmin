@@ -14,6 +14,7 @@ Vue.use(iView)
 Vue.config.productionTip = false
 Vue.prototype.$http = axios
 Vue.prototype.$moment = moment
+Vue.prototype.FILE_SERVER = process.env.FILE_SERVER
 
 /* eslint-disable no-new */
 new Vue({

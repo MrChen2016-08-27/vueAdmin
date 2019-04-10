@@ -1,33 +1,33 @@
 <template>
     <div id="content-detail">
-        <header-title icon="person-stalker">{{ getDetailId ? '编辑内容' : '新增内容' }}</header-title>
-        <Form ref="form" style="margin-top: 20px; margin-bottom: 100px;" :model="form" :rules="getFormRules" :label-width="80">
+        <header-title icon="person-stalker">{{ getDetailId ? '审核内容' : '审核内容' }}</header-title>
+        <Form ref="form" style="margin-top: 20px; margin-bottom: 100px;" :model="reviewForm" :rules="getFormRules" :label-width="80">
             <Row>
                 <Col span="24">
                 <FormItem label="标题" prop="title">
-                    <Input v-model="form.title" placeholder="标题"></Input>
+                    <Input readonly v-model="form.title" placeholder="标题"></Input>
                 </FormItem>
                 </Col>
                 <Col span="24">
                 <FormItem label="描述" prop="description">
-                    <Input v-model="form.description" placeholder="描述"></Input>
+                    <Input readonly v-model="form.description" placeholder="描述"></Input>
                 </FormItem>
                 </Col>
                 <Col span="24">
                 <FormItem label="关键字">
-                    <Input v-model="form.keywords" placeholder="关键词"></Input>
+                    <Input readonly v-model="form.keywords" placeholder="关键词"></Input>
                     <Alert>词语之间用 | 号分隔, 如: 玩具|儿童</Alert>
                 </FormItem>
                 </Col>
                 <Col span="24">
                 <FormItem style="display: inline-block;" label="选择栏目" prop="columnId">
-                    <Select @on-change="changeColumnId()" v-model="form.columnId" style="width:200px">
+                    <Select disabled @on-change="changeColumnId()" v-model="form.columnId" style="width:200px">
                         <Option value="">请选择</Option>
                         <Option v-for="item in columnList" :value="item.id" :key="item.id">{{ item.name }}</Option>
                     </Select>
                 </FormItem>
                 <FormItem style="display: inline-block; margin-left: -70px;" prop="columnTypeId">
-                    <Select v-if="form.columnId && columnTypeList && columnTypeList.length > 0" v-model="form.columnTypeId" style="width:200px">
+                    <Select disabled v-if="form.columnId && columnTypeList && columnTypeList.length > 0" v-model="form.columnTypeId" style="width:200px">
                         <Option value="">请选择</Option>
                         <Option v-for="item in columnTypeList" :value="item.id" :key="item.id">{{ item.name }}</Option>
                     </Select>
@@ -35,7 +35,7 @@
                 </Col>
                 <Col span="24">
                 <FormItem style="display: inline-block;" label="选择类型">
-                    <Select v-if="typeList && typeList.length > 0" v-model="form.typeId" style="width:200px">
+                    <Select disabled v-if="typeList && typeList.length > 0" v-model="form.typeId" style="width:200px">
                         <Option value="">请选择</Option>
                         <Option v-for="item in typeList" :value="item.id" :key="item.id">{{ item.name }}</Option>
                     </Select>
@@ -47,11 +47,11 @@
                         <div>
                             <img :src="FILE_SERVER + form.icon" />
                             <div class="upload-cover">
-                                <Icon size="26" type="ios-trash-outline" @click.native="removeIconImg()"></Icon>
+                                <!-- <Icon size="26" type="ios-trash-outline" @click.native="removeIconImg()"></Icon> -->
                             </div>
                         </div>
                     </div>
-                    <Upload style="display: inline-block;" ref="uploadIcon" :show-upload-list="false" :before-upload="beforeUploadImg" :action="uploadImgAction" name="file" :headers="getTokenHeader" :format="['jpg','jpeg','png']" :on-success="uploadSucess" :on-remove="removeIconImg">
+                    <Upload disabled style="display: inline-block;" ref="uploadIcon" :show-upload-list="false" :before-upload="beforeUploadImg" :action="uploadImgAction" name="file" :headers="getTokenHeader" :format="['jpg','jpeg','png']" :on-success="uploadSucess" :on-remove="removeIconImg">
                         <div class="upload-icon-box">
                             <Icon class="upload-icon" type="ios-camera" size="20"></Icon>
                         </div>
@@ -61,10 +61,10 @@
                 <Col span="24">
                 <FormItem label="来源类型" prop="sourceType">
                     <RadioGroup v-model="form.sourceType">
-                        <Radio :label="0">
+                        <Radio disabled :label="0">
                             <span>自定义</span>
                         </Radio>
-                        <Radio :label="1">
+                        <Radio disabled :label="1">
                             <span>链接</span>
                         </Radio>
                     </RadioGroup>
@@ -72,20 +72,31 @@
                 </Col>
                 <Col v-show="!form.sourceType" span="24">
                 <FormItem label="内容" prop="content">
-                    <quill-editor class="content-editor" v-model="form.content" ref="myQuillEditor" :options="editorOption" @change="onEditorChange($event)">
+                    <quill-editor disabled class="content-editor" v-model="form.content" ref="myQuillEditor" :options="editorOption" @change="onEditorChange($event)">
                     </quill-editor>
                 </FormItem>
                 </Col>
                 <Col v-show="form.sourceType" span="24">
                 <FormItem label="链接" prop="source">
-                    <Input v-model="form.source" placeholder="来源链接"></Input>
+                    <Input readonly v-model="form.source" placeholder="来源链接"></Input>
                 </FormItem>
+                </Col>
+                <Col span="24">
+                    <FormItem label="审核意见" prop="source">
+                        <Input v-model="reviewForm.opinion" type="textarea" :row="3" ></Input>
+                    </FormItem>
+                </Col>
+                <Col span="24">
+                    <FormItem label="备注" prop="source">
+                        <Input v-model="reviewForm.remark" type="textarea" :row="3" ></Input>
+                    </FormItem>
                 </Col>
             </Row>
         </Form>
         <div style="text-align: center;" class="page-action-footer">
-            <Button @click="submitContent" type="primary">提交</Button>
-            <Button>取消</Button>
+            <Button @click="submitContent(-1)" type="error" >拒绝通过</Button>
+            <Button @click="submitContent(2)" type="primary">通过审核</Button>
+            <Button>返回</Button>
         </div>
         <Upload :show-upload-list="false" :before-upload="brefoQuillUpload" :headers="getTokenHeader" style="display: none;" ref="quillUpload" :action="getQuillUploadUrl" :on-success="uploadQuillFile">
             <Button ref="quillUpload-btn" icon="ios-cloud-upload-outline" ghost>Upload files</Button>
@@ -97,7 +108,7 @@
 import { uploadImgAction, uploadFileAction } from '@/api/upload';
 import columnApi from '@/api/column';
 import typeApi from '@/api/type';
-import contentApi from '@/api/content';
+import reviewApi from '@/api/review'
 import HeaderTitle from '@/components/HeaderTitle';
 import { beforeUploadImg, beforeUploadFile } from '@/tool/uploadValidate';
 import { quillEditor } from 'vue-quill-editor';
@@ -121,6 +132,11 @@ export default {
                 typeId: null,
                 source: "",
                 sourceType: 0
+            },
+            reviewForm: {
+                status: 1,
+                opinion: '',
+                remark: ''
             },
             columnList: [],
             typeList: [],
@@ -164,36 +180,13 @@ export default {
         },
         getFormRules () {
             let formRules = {
-                title: [
-                    { required: true, message: '请输入标题', trigger: 'blur' }
+                opinion: [
+                    { required: true, message: '请输入审核意见', trigger: 'blur' }
                 ],
-                description: [
-                    { required: true, message: '请输入描述', trigger: 'blur' }
-                ],
-                icon: [
-                    { required: true, message: '请选择封面', trigger: 'blur' }
-                ],
-                sourceType: [
-                    { required: true, type: 'number', message: '请选择来源类型', trigger: 'change' }
-                ],
-                columnId: [
-                    { required: true, type: 'number', message: '请选择栏目', trigger: 'change' }
+                remark: [
+                    { required: true, message: '请输入备注', trigger: 'blur' }
                 ],
             };
-            switch (this.form.sourceType) {
-                case 0:
-                    formRules.content = [
-                            { required: true, message: '请输入内容', trigger: 'blur' }
-                    ];
-                    break;
-                case 1:
-                    formRules.source = [
-                        { required: true, message: '请输入来源链接', trigger: 'blur' }
-                    ];
-                    break;
-                default:
-                    break;
-            }
             return formRules;
         }
     },
@@ -229,7 +222,7 @@ export default {
             this.typeList = data.data.list;
         },
         async getContentDetail (id) {
-            const { data } = await contentApi.getContent(id);
+            const { data } = await reviewApi.getReviewContent(id);
             let form = Object.assign(this.form, data.data);
             this.$set(this, 'form', form);
         },
@@ -256,23 +249,16 @@ export default {
         onEditorChange ({ quill, html, text }) {
             this.content = html
         },
-        async submitContent (refForm) {
-            let params = this.form;
-            if (!this.form.columnTypeId) {
-                this.form.columnTypeId = null
-            }
-            if (!this.form.typeId) {
-                this.form.typeId = null
-            }
+        async submitContent (status) {
+            let params = this.reviewForm;
             this.$refs.form.validate(async (valid) => {
                 if (valid) {
                     if (this.getDetailId) {
-                        params.id = this.getDetailId;
-                        await contentApi.updateContent(params);
-                    } else {
-                        await contentApi.addContent(params);
+                        params.status = status;
+                        params.contentId = this.getDetailId;
+                        await reviewApi.addReviewContent(params);
                     }
-                    this.$router.push({ name: 'Content/ContentList' });
+                    this.$router.push({ name: 'Review/ContentList' });
                 }
             })
         },
