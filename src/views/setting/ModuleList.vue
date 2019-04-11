@@ -19,6 +19,9 @@
                 <FormItem prop="name" label="名称">
                     <Input class="text-input" type="text" v-model="formInline.name"></Input>
                 </FormItem>
+                <FormItem prop="mark" label="标识">
+                    <Input style="width: 100px;" class="text-input" type="number" v-model="formInline.mark"></Input>
+                </FormItem>
             </Form>
             <div slot="footer">
                 <Button @click="modal1 = false">取消</Button>
@@ -59,11 +62,15 @@ export default {
             delModal: false,
             del_loading: false,
             formInline: {
-                name: ''
+                name: '',
+                mark: '',
             },
             ruleInline: {
                 name: [
                     { required: true, message: '请输入模块名称', trigger: 'blur' }
+                ],
+                mark: [
+                    { required: true, message: '请输入标识值', trigger: 'blur' }
                 ],
             },
             modules1: [
@@ -76,6 +83,11 @@ export default {
                     title: '名称',
                     key: 'name',
                     minWidth: 120
+                },
+                {
+                    title: '标识',
+                    key: 'mark',
+                    minWidth: 80
                 },
                 {
                     title: '创建时间',

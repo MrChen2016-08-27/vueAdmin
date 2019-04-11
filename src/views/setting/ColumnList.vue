@@ -4,7 +4,7 @@
         <div class="page-flex-header">
             <div class="left-flex">
                 <Button @click="viewAddColumn('formInline')" type="primary">新增栏目</Button>
-                <Select @on-change="selectModuleId" v-model="params.moduleId" style="width:200px">
+                <Select @on-change="selectModuleMark" v-model="params.moduleMark" style="width:200px">
                     <Option value="">全部</Option>
                     <Option v-for="item in moduleList" :value="item.id" :key="item.id">{{ item.name }}</Option>
                 </Select>
@@ -23,9 +23,9 @@
                 <FormItem prop="name" label="名称">
                     <Input class="text-input" type="text" v-model="formInline.name"></Input>
                 </FormItem>
-                <FormItem prop="moduleId" label="所属模块">
-                    <Select v-model="formInline.moduleId" style="width:200px">
-                        <Option v-for="item in moduleList" :value="item.id" :key="item.id">{{ item.name }}</Option>
+                <FormItem prop="moduleMark" label="所属模块">
+                    <Select v-model="formInline.moduleMark" style="width:200px">
+                        <Option v-for="item in moduleList" :value="item.mark" :key="item.id">{{ item.name }}</Option>
                     </Select>
                 </FormItem>
             </Form>
@@ -71,13 +71,13 @@ export default {
             del_loading: false,
             formInline: {
                 name: '',
-                moduleId: ''
+                moduleMark: ''
             },
             ruleInline: {
                 name: [
                     { required: true, message: '请输入栏目名称', trigger: 'blur' }
                 ],
-                moduleId: [
+                moduleMark: [
                     { required: true, type: 'number',  message: '请选择模块', trigger: 'change' }
                 ],
             },
@@ -199,7 +199,7 @@ export default {
             this.formInline.name = name;
             this.delModal = true;
         },
-        selectModuleId () {
+        selectModuleMark () {
             this.params.pageNumber = 1;
             this.params.pageSize = 10;
             this.getColumnList();
@@ -209,7 +209,7 @@ export default {
                 pageNumber: 1,
                 pageSize: 10,
                 keyword: '',
-                moduleId: '',
+                moduleMark: '',
             }
             this.keyword = '';
             this.getColumnList();
