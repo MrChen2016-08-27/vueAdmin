@@ -171,7 +171,7 @@ export default {
                                 },
                                 on: {
                                    click: () => {
-                                       this.viewEditUser(params.row.id)
+                                       this.viewEditUser(params.row.id, 'formInline')
                                    }
                                 },
                                 style: btnStyle
@@ -182,7 +182,7 @@ export default {
                                 },
                                 on: {
                                    click: () => {
-                                       this.viewDeleteUser(params.row)
+                                       this.viewDeleteUser(params.row, 'formInline')
                                    }
                                 }
                             }, '删除'),
@@ -244,24 +244,26 @@ export default {
             this.selectUser = null;
             this.$refs[refName].resetFields();
             this.getRoleList();
-            this.ruleInline.password = [
-                { required: true, message: '请输入密码', trigger: 'blur' },
-            ];
+            this.$set(this.ruleInline, 'password', [
+                { required: true, min: 6, max: 16, message: this.$t('Password.Require'), trigger: 'blur' },
+            ])
         },
-        async viewEditUser(id) {
+        async viewEditUser(id, refName) {
+            this.$refs[refName].resetFields();
             this.getRoleList();
             let { data } = await userApi.getUser(id);
             this.selectUser = data.data;
-            this.formInline = data.data;
-            this.formInline.roleIds = data.data.roles.map(item => item.id)
-            delete this.formInline.roles;
+            this.$set(this, 'formInline', data.data)
+            let roleIds = data.data.Roles.map(item => item.id)
+            this.$set(this.formInline, 'roleIds', roleIds)
+            delete this.formInline.Roles;
             this.modal1 = true;
-            delete this.ruleInline.password;
-            
+            this.$set(this.ruleInline, 'password', [])
+
         },
-        viewDeleteUser (select) {
+        viewDeleteUser (select, refName) {
             this.selectUser = select;
-            this.formInline = {};
+            this.$refs[refName].resetFields();
             this.delModal = true;
         },
         async deleteUser (id) {
