@@ -15,7 +15,7 @@ const app = {
     },
     actions: {
         async filterLeftMenus({ state, commit, rootState }) {
-            const list = [...appRouter]
+            const list = _.cloneDeep(appRouter)
             const res = await getTokenUser()
             const { menus } = res.data.data
             console.log(res.data.meta, 'res.data.meta')
