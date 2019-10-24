@@ -35,15 +35,21 @@ const app = {
  *
  */
 function filterMenus(list, menus) {
-    const leftMenus = menus.map(item => {
-        let nowObj = list.find(item2 => item.title == item2.title)
+    let leftMenus = []
+    menus.forEach(item => {
+        if (item.hidden) {
+            return
+        }
+        let nowObj = list.find(item2 => {
+            return item.id == item2.id || (item.fixed == item2.fixed && item.fixed)
+        })
         if (!nowObj) {
             throw Error('服务端与本地路由配置不匹配')
         }
         if (item.children) {
             nowObj.children = filterMenus(nowObj.children, item.children)
         }
-        return nowObj
+        leftMenus.push(nowObj)
     })
     return leftMenus
 }

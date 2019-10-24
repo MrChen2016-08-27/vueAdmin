@@ -131,11 +131,13 @@ export const appRouter = [
         component: Layout,
         icon: 'clipboard',
         title: '审核管理',
+        id: '4',
         children: [
             {
                 path: 'content',
                 name: 'Review/ContentList',
                 component: ContentReview,
+                id: '1',
                 title: '内容审核',
                 meta: {
                     menuKey: 'Review'
@@ -149,12 +151,14 @@ export const appRouter = [
         component: Layout,
         icon: 'clipboard',
         title: '内容管理',
+        id: '3',
         children: [
             {
                 path: 'contentList',
                 name: 'Content/ContentList',
                 component: ContentList,
                 title: '综合内容管理',
+                id: '1',
                 meta: {
                     menuKey: 'Content'
                 }
@@ -164,6 +168,7 @@ export const appRouter = [
                 name: 'Content/MyContentList',
                 component: MyContent,
                 title: '我的内容管理',
+                id: '2',
                 meta: {
                     menuKey: 'MyContent'
                 }
@@ -176,12 +181,14 @@ export const appRouter = [
         component: Layout,
         icon: 'clipboard',
         title: '基本设置',
+        id: '2',
         children: [
             {
                 path: 'moduleList',
                 name: 'Setting/ModuleList',
                 component: ModuleList,
                 title: '模块设置',
+                id: '1',
                 meta: {
                     menuKey: 'Module'
                 }
@@ -191,6 +198,7 @@ export const appRouter = [
                 name: 'Setting/ColumnList',
                 component: ColumnList,
                 title: '栏目设置',
+                id: '2',
                 meta: {
                     menuKey: 'Column'
                 }
@@ -200,6 +208,7 @@ export const appRouter = [
                 name: 'Setting/TypeList',
                 component: TypeList,
                 title: '分类设置',
+                id: '3',
                 props: true,
                 meta: {
                     menuKey: 'Type'
@@ -213,12 +222,14 @@ export const appRouter = [
         component: Layout,
         icon: 'clipboard',
         title: '系统管理',
+        id: '1',
         children: [
             {
                 path: 'roleList',
                 name: 'System/RoleList',
                 component: RoleList,
                 title: '角色管理',
+                id: '1',
                 meta: {
                     menuKey: 'Role'
                 }
@@ -227,6 +238,7 @@ export const appRouter = [
                 path: 'userList',
                 name: 'System/UserList',
                 component: UserList,
+                id: '3',
                 title: '用户管理',
                 meta: {
                     menuKey: 'User'
