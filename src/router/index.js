@@ -255,7 +255,7 @@ export const router = new Router({
             redirect: '/home'
         },
         loginRouter,
+        ...appRouter,
         ...otherRouter,
-        ...appRouter
     ]
 })
