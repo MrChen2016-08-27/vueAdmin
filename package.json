@@ -12,7 +12,7 @@
   "dependencies": {
     "@antv/data-set": "^0.8.9",
     "@antv/g2": "^3.1.2",
-    "axios": "^0.18.0",
+    "axios": "^0.21.1",
     "babel-plugin-import": "^1.7.0",
     "babel-polyfill": "^6.26.0",
     "flv.js": "^1.4.2",
